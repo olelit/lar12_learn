@@ -1,0 +1,60 @@
+services:
+  php:
+    container_name: php
+    build:
+      dockerfile: ./docker/php/Dockerfile
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./src:/var/www
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+    environment:
+      - PHP_MEMORY_LIMIT=2G
+    networks:
+      - laravel-production
+    depends_on:
+      - db
+      - redis
+
+  nginx:
+    container_name: nginx
+    tty: true
+    build:
+      dockerfile: ./docker/nginx/Dockerfile
+    volumes:
+      - ./src:/var/www
+    ports:
+      - "7000:80"
+    depends_on:
+      - php
+    networks:
+      - laravel-production
+
+  db:
+    container_name: db
+    image: postgres:16
+    restart: unless-stopped
+    user: postgres
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      - POSTGRES_DB=${POSTGRES_DATABASE}
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data-production:/var/lib/postgresql/data
+    networks:
+      - laravel-production
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - laravel-production
+
+networks:
+  laravel-production:
+
+volumes:
+  postgres-data-production:
