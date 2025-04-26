@@ -1,4 +1,2 @@
-frontend/node_modules
-build
-.next
-.git
+/src/resources/*/node_modules
+/src/node_modules
