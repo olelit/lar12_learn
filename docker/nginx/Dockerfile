@@ -1,7 +1,5 @@
-FROM base_image
 FROM nginx:alpine
 COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY --from=base_image /var/www /var/www
-WORKDIR /var/www
+COPY /src /var/www
 
 CMD ["nginx", "-g", "daemon off;"]

@@ -1,4 +1,4 @@
-FROM php:8.1-fpm as base_image
+FROM php:8.1-fpm
 
 COPY /src /var/www
 WORKDIR /var/www
