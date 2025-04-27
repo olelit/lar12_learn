@@ -13,16 +13,17 @@ RUN apk update && apk add --no-cache \
     npm \
     libxml2-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql pgsql zip exif gd soap
+    && docker-php-ext-install pdo pdo_pgsql pgsql zip exif gd soap \
+    && npm install -g yarn
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY /src /var/www
 WORKDIR /var/www
 RUN composer install
-RUN npm install -g yarn
+RUN yarn install
 RUN yarn production
 
-RUN git config --global --add safe.directory /var/www/vendor/mad-web/laravel-enum
+#RUN git config --global --add safe.directory /var/www/vendor/mad-web/laravel-enum
 
 RUN chown -R www-data:www-data /var/www/storage && chmod -R 755 /var/www/storage
 
