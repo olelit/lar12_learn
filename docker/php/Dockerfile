@@ -20,8 +20,7 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-RUN chown -R www-data:www-data /var/www/storage
-RUN chmod -R 755 /var/www/storage
+RUN chown -R www-data:www-data /var/www/storage && chmod -R ug+rw /var/www/storage
 RUN npm install -g yarn
 
 ENV COMPOSER_CACHE_DIR=/var/www/.cache/composer
@@ -29,9 +28,5 @@ RUN mkdir -p /var/www/.cache/composer && chown -R www-data:www-data /var/www/.ca
 
 RUN git config --global --add safe.directory /var/www/vendor/mad-web/laravel-enum
 RUN git config --global --add safe.directory /var/www/vendor/mad-web/laravel-initializer
-
-RUN composer install
-#RUN yarn install
-#RUN yarn production
 
 CMD ["php-fpm"]
