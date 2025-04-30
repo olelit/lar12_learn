@@ -18,6 +18,8 @@ services:
     tty: true
     build:
       dockerfile: ./docker/nginx/Dockerfile
+    volumes:
+      - ./src:/var/www
     ports:
       - "80:80"
     depends_on:
