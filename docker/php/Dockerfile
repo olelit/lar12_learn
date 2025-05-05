@@ -19,21 +19,18 @@ COPY /src /var/www
 WORKDIR /var/www
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-RUN chown -R www-data:www-data /var/www && chmod -R ug+rw /var/www
+
 RUN npm install -g yarn
 
+RUN mkdir -p storage/logs bootstrap/cache && \
+    chmod -R 775 storage bootstrap/cache && \
+    chown -R root:root storage bootstrap/cache
+
+
 ENV COMPOSER_CACHE_DIR=/var/www/.cache/composer
-RUN mkdir -p /var/www/.cache/composer && chown -R www-data:www-data /var/www/.cache
+RUN mkdir -p /var/www/.cache/composer && chmod -R 775 /var/www/.cache && chown -R root:root /var/www/.cache
 
-RUN git config --global --add safe.directory /var/www/vendor/mad-web/laravel-enum
-RUN git config --global --add safe.directory /var/www/vendor/mad-web/laravel-initializer
-
-ARG USER_ID=1000
-ARG GROUP_ID=1000
-
-RUN addgroup --gid $GROUP_ID wwwuser && \
-    adduser --uid $USER_ID --gid $GROUP_ID --disabled-password wwwuser
-
-USER wwwuser
+RUN git config --global --add safe.directory /var/www/vendor/mad-web/laravel-enum && \
+    git config --global --add safe.directory /var/www/vendor/mad-web/laravel-initializer
 
 CMD ["php-fpm"]
