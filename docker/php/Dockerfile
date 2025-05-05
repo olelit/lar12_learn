@@ -13,24 +13,28 @@ RUN apt-get update && apt-get install -y \
     nodejs \
     npm \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql pgsql zip exif gd soap
+    && docker-php-ext-install pdo pdo_pgsql pgsql zip exif gd soap \
+    && npm install -g yarn \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY /src /var/www
+COPY . /var/www
 WORKDIR /var/www
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-RUN npm install -g yarn
-
-RUN mkdir -p storage/logs bootstrap/cache && \
-    chmod -R 775 storage bootstrap/cache && \
-    chown -R root:root storage bootstrap/cache
-
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+RUN addgroup --gid ${GROUP_ID} hostgroup \
+    && adduser --uid ${USER_ID} --gid ${GROUP_ID} --disabled-password --gecos "" hostuser
 
 ENV COMPOSER_CACHE_DIR=/var/www/.cache/composer
-RUN mkdir -p /var/www/.cache/composer && chmod -R 775 /var/www/.cache && chown -R root:root /var/www/.cache
+RUN mkdir -p storage/logs bootstrap/cache ${COMPOSER_CACHE_DIR} && \
+    chown -R hostuser:hostgroup storage bootstrap/cache ${COMPOSER_CACHE_DIR} && \
+    chmod -R 775 storage bootstrap/cache ${COMPOSER_CACHE_DIR}
 
 RUN git config --global --add safe.directory /var/www/vendor/mad-web/laravel-enum && \
     git config --global --add safe.directory /var/www/vendor/mad-web/laravel-initializer
+
+USER hostuser
 
 CMD ["php-fpm"]
