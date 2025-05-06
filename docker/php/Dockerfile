@@ -1,6 +1,6 @@
 FROM php:8.1-fpm
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     git \
     unzip \
@@ -10,30 +10,43 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libonig-dev \
     libxml2-dev \
-    nodejs \
-    npm \
+    curl \
+    ca-certificates \
+    gnupg \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql pgsql zip exif gd soap \
+    && docker-php-ext-install -j$(nproc) \
+        pdo \
+        pdo_pgsql \
+        pgsql \
+        zip \
+        exif \
+        gd \
+        soap \
+    && apt-get purge -y --auto-remove \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get update && apt-get install -y nodejs \
     && npm install -g yarn \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-COPY . /var/www
-WORKDIR /var/www
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
-RUN addgroup --gid ${GROUP_ID} hostgroup \
-    && adduser --uid ${USER_ID} --gid ${GROUP_ID} --disabled-password --gecos "" hostuser
+RUN groupadd -g ${GROUP_ID} hostgroup \
+    && useradd -u ${USER_ID} -g hostgroup -m -s /bin/bash hostuser
+
+WORKDIR /var/www
+COPY . .
 
 ENV COMPOSER_CACHE_DIR=/var/www/.cache/composer
-RUN mkdir -p storage/logs bootstrap/cache ${COMPOSER_CACHE_DIR} && \
-    chown -R hostuser:hostgroup storage bootstrap/cache ${COMPOSER_CACHE_DIR} && \
-    chmod -R 775 storage bootstrap/cache ${COMPOSER_CACHE_DIR}
+RUN mkdir -p ${COMPOSER_CACHE_DIR} \
+    && chown -R hostuser:hostgroup ${COMPOSER_CACHE_DIR} \
+    && chmod -R 775 ${COMPOSER_CACHE_DIR}
 
-RUN git config --global --add safe.directory /var/www/vendor/mad-web/laravel-enum && \
-    git config --global --add safe.directory /var/www/vendor/mad-web/laravel-initializer
+RUN git config --global --add safe.directory /var/www/vendor/mad-web/laravel-enum \
+    && git config --global --add safe.directory /var/www/vendor/mad-web/laravel-initializer
 
 USER hostuser
 
