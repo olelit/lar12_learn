@@ -37,8 +37,9 @@ ARG GROUP_ID=1000
 RUN groupadd -g ${GROUP_ID} hostgroup \
     && useradd -u ${USER_ID} -g hostgroup -m -s /bin/bash hostuser
 
+COPY docker/php/php.ini /usr/local/etc/php/conf.d/local.ini
 WORKDIR /var/www
-COPY . .
+COPY /src .
 
 ENV COMPOSER_CACHE_DIR=/var/www/.cache/composer
 RUN mkdir -p ${COMPOSER_CACHE_DIR} \
