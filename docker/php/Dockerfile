@@ -41,11 +41,6 @@ COPY docker/php/php.ini /usr/local/etc/php/conf.d/local.ini
 WORKDIR /var/www
 COPY /src .
 
-ENV COMPOSER_CACHE_DIR=/var/www/.cache/composer
-RUN mkdir -p ${COMPOSER_CACHE_DIR} \
-    && chown -R hostuser:hostgroup ${COMPOSER_CACHE_DIR} \
-    && chmod -R 775 ${COMPOSER_CACHE_DIR}
-
 RUN git config --global --add safe.directory /var/www/vendor/mad-web/laravel-enum \
     && git config --global --add safe.directory /var/www/vendor/mad-web/laravel-initializer
 
