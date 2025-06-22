@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get purge -y --auto-remove \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get update && apt-get install -y nodejs \
     && npm install -g yarn \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -37,7 +37,12 @@ ARG GROUP_ID=1000
 RUN groupadd -g ${GROUP_ID} hostgroup \
     && useradd -u ${USER_ID} -g hostgroup -m -s /bin/bash hostuser
 
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
+
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/local.ini
+COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
 WORKDIR /var/www
 COPY /src .
 
