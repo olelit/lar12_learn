@@ -40,8 +40,7 @@ RUN groupadd -g ${GROUP_ID} hostgroup \
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug
 
-COPY docker/app/php.ini /usr/local/etc/php/conf.d/local.ini
-COPY docker/app/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+COPY docker/app/php.ini /usr/local/etc/php/conf.d/php.ini
 
 WORKDIR /var/www
 COPY /src .
