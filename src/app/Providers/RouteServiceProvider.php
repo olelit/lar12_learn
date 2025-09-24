@@ -10,9 +10,9 @@ class RouteServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->routes(function () {
-            Route::prefix('api/v1')
+            Route::prefix('telegram/v1')
                 ->middleware('api')
-                ->group(base_path('routes/api_v1.php'));
+                ->group(base_path('routes/telegram/v1/telegram.php'));
         });
 
     }

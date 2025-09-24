@@ -1,0 +1,7 @@
+parameters:
+  # use the highest available/strictest level for your installed PHPStan version
+  level: max
+
+  # анализируем только папку app
+  paths:
+    - app
