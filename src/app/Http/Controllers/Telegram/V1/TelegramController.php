@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Telegram\V1;
 use App\Http\Controllers\Controller;
 use App\Services\Telegram\V1\TelegramService;
 use Illuminate\Http\JsonResponse;
+use SergiX44\Nutgram\Nutgram;
 
 class TelegramController extends Controller
 {
@@ -15,9 +16,9 @@ class TelegramController extends Controller
     {
     }
 
-    public function convertToCsv(): JsonResponse
+    public function convertToCsv(Nutgram $bot): JsonResponse
     {
-        $this->telegramService->convertToCsv();
+        $this->telegramService->convertToCsv($bot);
         return response()->json([
             'ok' => true,
         ]);
