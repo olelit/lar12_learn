@@ -10,6 +10,7 @@ class FileConverterFactory
     {
         return match (strtolower($extension)) {
             'numbers' => new NumbersConverter(),
+            'xls', 'xlsx' => new XlsxConverter(),
             default => throw new InvalidArgumentException("Неизвестное расширение: $extension"),
         };
     }
