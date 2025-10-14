@@ -10,6 +10,9 @@ use SergiX44\Nutgram\Telegram\Types\Internal\InputFile;
 
 class TelegramService
 {
+    public const string INPUT_DIR = 'app/input';
+    public const string OUTPUT_DIR = 'app/output';
+
     public function convertToCsv(Nutgram $bot): void
     {
         $message = $bot->message();
@@ -28,8 +31,8 @@ class TelegramService
             return;
         }
 
-        $inputDir = storage_path('app/input');
-        $outputDir = storage_path('app/output');
+        $inputDir = storage_path(self::INPUT_DIR);
+        $outputDir = storage_path(self::OUTPUT_DIR);
         if (!is_dir($inputDir)) mkdir($inputDir, 0755, true);
         if (!is_dir($outputDir)) mkdir($outputDir, 0755, true);
         $fullPath = $inputDir . '/' . $fileName;
@@ -54,7 +57,7 @@ class TelegramService
                 $bot->sendMessage(LangHelper::getToCSVByKey('convert_error'));
             }
         } catch (\InvalidArgumentException $e) {
-            $bot->sendMessage(LangHelper::getToCSVByKey('unsupported_format', ['EXT' => $extension]));
+            $bot->sendMessage($e->getMessage());
         }
     }
 

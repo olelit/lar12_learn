@@ -5,6 +5,9 @@ namespace App\Helpers;
 
 class LangHelper
 {
+    /**
+     * @param array<string, string> $params
+     */
     public static function getToCSVByKey(string $key, array $params = []): string
     {
         $value = __("to_csv_module.{$key}", $params);
