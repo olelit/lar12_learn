@@ -6,7 +6,7 @@ namespace App\Helpers;
 class LangHelper
 {
     /**
-     * @param array<string, string> $params
+     * @param array<string, numeric|string> $params
      */
     public static function getToCSVByKey(string $key, array $params = []): string
     {

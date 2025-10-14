@@ -16,11 +16,13 @@ class TelegramController extends Controller
     {
     }
 
-    public function convertToCsv(Nutgram $bot): JsonResponse
+    public function convertToCsv(Nutgram $bot): void
     {
         $this->telegramService->convertToCsv($bot);
-        return response()->json([
-            'ok' => true,
-        ]);
+    }
+
+    public function start(Nutgram $bot): void
+    {
+        $this->telegramService->start($bot);
     }
 }
