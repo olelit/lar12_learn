@@ -6,17 +6,15 @@ namespace App\Services\Telegram\V1;
 use App\Enums\SheetFileExtEnum;
 use App\Helpers\LangHelper;
 use App\Models\Client;
-use App\Services\FileConverters\FileConverterFactory;
+use App\Services\FileConverterService;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Internal\InputFile;
 
-class TelegramService
+readonly class TelegramService
 {
-    public const string INPUT_DIR = 'app/input';
-    public const string OUTPUT_DIR = 'app/output';
-
     public function __construct(
-        private readonly ClientService $clientService,
+        private ClientService        $clientService,
+        private FileConverterService $fileConverterService,
     )
     {
     }
@@ -54,12 +52,9 @@ class TelegramService
             return;
         }
 
-        $inputDir = storage_path(self::INPUT_DIR);
-        $outputDir = storage_path(self::OUTPUT_DIR);
-        if (!is_dir($inputDir)) mkdir($inputDir, 0755, true);
-        if (!is_dir($outputDir)) mkdir($outputDir, 0755, true);
+        $inputDir = storage_path(FileConverterService::INPUT_DIR);
+        $outputDir = storage_path(FileConverterService::OUTPUT_DIR);
         $inputFullPath = $inputDir . '/' . $fileName;
-
         $inputFileName = pathinfo($inputFullPath, PATHINFO_FILENAME) . '.csv';
         $outputFullPath = $outputDir . '/' . $inputFileName;
 
@@ -71,10 +66,9 @@ class TelegramService
         }
 
         $file->save($inputFullPath);
-        $extension = pathinfo($fileName, PATHINFO_EXTENSION);
 
         try {
-            $convertedFilePath = $this->findStrategyAndConvert($extension, $inputFullPath, $outputDir);
+            $convertedFilePath = $this->fileConverterService->convert($fileName);
             if ($convertedFilePath) {
                 $bot->sendDocument(
                     document: InputFile::make($convertedFilePath),
@@ -103,12 +97,6 @@ class TelegramService
             unlink($inputFullPath);
             unlink($outputFullPath);
         }
-    }
-
-    public function findStrategyAndConvert(string $extension, string $fullPath, string $outputDir): ?string
-    {
-        $converter = FileConverterFactory::make($extension);
-        return $converter->convert($fullPath, $outputDir);
     }
 
     public function start(Nutgram $bot): void

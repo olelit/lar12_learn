@@ -1,6 +1,6 @@
 <?php
 
-use App\Livewire\UploadFile;
+use App\Livewire\FileUploaderForCsvConvert;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', UploadFile::class);
+Route::get('/', FileUploaderForCsvConvert::class);
