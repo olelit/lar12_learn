@@ -93,9 +93,6 @@ readonly class TelegramService
             }
         } catch (\InvalidArgumentException $e) {
             $bot->sendMessage($e->getMessage());
-        } finally {
-            unlink($inputFullPath);
-            unlink($outputFullPath);
         }
     }
 

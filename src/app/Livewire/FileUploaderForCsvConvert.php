@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Services\Web\V1\FileUploaderForCsvConvertService;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Log;
@@ -12,7 +13,7 @@ class FileUploaderForCsvConvert extends Component
     use WithFileUploads;
 
     public ?UploadedFile $file = null;
-
+    public ?string $downloadPath = null;
     protected array $rules = [
         'file' => ['required', 'file'],
     ];
@@ -21,18 +22,22 @@ class FileUploaderForCsvConvert extends Component
     {
         $this->validate();
 
-        // Проверяем, что файл реально пришёл
         if ($this->file) {
-            $filename = $this->file->getClientOriginalName();
-            Log::info("✅ CSV file uploaded: {$filename}");
-
-            // Сохраняем файл во временное хранилище
-            $path = $this->file->store('csv_uploads');
-            session()->flash('message', "File uploaded successfully: {$filename} (saved to {$path})");
+            $csvConvertService = app(FileUploaderForCsvConvertService::class);
+            $this->downloadPath = $csvConvertService->saveAndConvert($this->file);
         } else {
             Log::warning('Upload called but file is null');
             session()->flash('message', 'No file selected.');
         }
+    }
+
+    public function downloadConverted()
+    {
+        if (!$this->downloadPath) {
+            return;
+        }
+
+        return response()->download($this->downloadPath);
     }
 
     public function render()

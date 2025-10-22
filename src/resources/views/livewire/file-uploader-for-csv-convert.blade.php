@@ -14,7 +14,7 @@
             type="file"
             wire:model="file"
             class="border border-gray-300 rounded p-2"
-            accept=".csv,.txt"
+            accept=".csv,.txt,.xls,.xlsx,.numbers"
         >
 
         @error('file')
@@ -24,11 +24,19 @@
         <button
             type="submit"
             class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-            Upload CSV
+            Upload
         </button>
     </form>
 
     <div wire:loading wire:target="file" class="text-gray-500 text-sm mt-2">
         Uploading...
     </div>
+
+    @if(!empty($downloadPath))
+        <button
+            wire:click="downloadConverted"
+            class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+            Download Converted File
+        </button>
+    @endif
 </div>

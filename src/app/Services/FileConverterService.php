@@ -7,8 +7,8 @@ use App\Services\FileConverters\FileConverterFactory;
 
 class FileConverterService
 {
-    public const string INPUT_DIR = 'app/input';
-    public const string OUTPUT_DIR = 'app/output';
+    public const string INPUT_DIR = 'app/private/input';
+    public const string OUTPUT_DIR = 'app/private/output';
     public function convert(string $fileName): ?string
     {
         $inputDir = storage_path(self::INPUT_DIR);
