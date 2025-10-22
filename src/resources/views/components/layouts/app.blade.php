@@ -7,10 +7,10 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body class="bg-blue-600 min-h-screen flex items-center justify-center">
 
 <div class="w-full max-w-md">
-    <livewire:file-uploader-for-csv-convert />
+    <livewire:file-uploader-for-csv-convert/>
 </div>
 
 @livewireScripts

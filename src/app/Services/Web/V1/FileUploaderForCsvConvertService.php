@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Services\Web\V1;
 
 use App\Services\FileConverterService;
+use Exception;
 use Illuminate\Http\UploadedFile;
 
 readonly class FileUploaderForCsvConvertService
@@ -15,9 +16,17 @@ readonly class FileUploaderForCsvConvertService
     {
     }
 
-    public function saveAndConvert(UploadedFile $file): string
+    /**
+     * @throws Exception
+     */
+    public function saveAndConvert(UploadedFile $file): ?string
     {
         $path = $file->store('input');
+
+        if ($path === false) {
+            throw new Exception('Invalid upload path.');
+        }
+
         $extension = pathinfo($path, PATHINFO_EXTENSION);
         $filename = pathinfo($path, PATHINFO_FILENAME) . '.' . $extension;
         return $this->fileConverterService->convert($filename);
