@@ -7,6 +7,7 @@ use App\Enums\SheetFileExtEnum;
 use App\Helpers\LangHelper;
 use App\Models\Client;
 use App\Services\FileConverterService;
+use Illuminate\Http\UploadedFile;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Internal\InputFile;
 
@@ -53,10 +54,7 @@ readonly class TelegramService
         }
 
         $inputDir = storage_path(FileConverterService::INPUT_DIR);
-        $outputDir = storage_path(FileConverterService::OUTPUT_DIR);
         $inputFullPath = $inputDir . '/' . $fileName;
-        $inputFileName = pathinfo($inputFullPath, PATHINFO_FILENAME) . '.csv';
-        $outputFullPath = $outputDir . '/' . $inputFileName;
 
         $file = $bot->getFile($fileId);
 
@@ -68,7 +66,7 @@ readonly class TelegramService
         $file->save($inputFullPath);
 
         try {
-            $convertedFilePath = $this->fileConverterService->convert($fileName);
+            $convertedFilePath = $this->fileConverterService->saveHistoryAndConvert($fileName, $fileName, $client);
             if ($convertedFilePath) {
                 $bot->sendDocument(
                     document: InputFile::make($convertedFilePath),

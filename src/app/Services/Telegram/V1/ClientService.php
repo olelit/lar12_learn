@@ -25,4 +25,18 @@ class ClientService
 
         return $client;
     }
+
+    public function createOrGetByIdentificator(string $identififator): Client
+    {
+        $client = Client::query()
+            ->where('web_identificator', '=', $identififator)
+            ->firstOrNew();
+
+        if (!$client->exists) {
+            $client->web_identificator = $identififator;
+            $client->save();
+        }
+
+        return $client;
+    }
 }

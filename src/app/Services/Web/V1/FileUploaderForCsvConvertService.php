@@ -3,15 +3,19 @@ declare(strict_types=1);
 
 namespace App\Services\Web\V1;
 
+use App\Http\Middleware\CheckClientCookie;
 use App\Services\FileConverterService;
+use App\Services\Telegram\V1\ClientService;
 use Exception;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cookie;
 
 readonly class FileUploaderForCsvConvertService
 {
 
     public function __construct(
         private FileConverterService $fileConverterService,
+        private ClientService        $clientService,
     )
     {
     }
@@ -29,6 +33,8 @@ readonly class FileUploaderForCsvConvertService
 
         $extension = pathinfo($path, PATHINFO_EXTENSION);
         $filename = pathinfo($path, PATHINFO_FILENAME) . '.' . $extension;
-        return $this->fileConverterService->convert($filename);
+        $identififator = Cookie::get(CheckClientCookie::COOKIE_NAME);
+        $client = $this->clientService->createOrGetByIdentificator($identififator);
+        return $this->fileConverterService->saveHistoryAndConvert($file->getFilename(), $file->getClientOriginalName(), $client);
     }
 }

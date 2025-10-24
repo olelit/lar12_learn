@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 
 /**
  * @property int $id
  * @property int $user_id
+ * @property string $web_identificator
  * @property int $convert_count
  */
 class Client extends Model
