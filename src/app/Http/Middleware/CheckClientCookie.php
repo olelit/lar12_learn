@@ -12,7 +12,7 @@ class CheckClientCookie
 {
     public const string COOKIE_NAME = 'client_cookie';
 
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next): mixed
     {
         if (!$request->hasCookie(self::COOKIE_NAME)) {
             $uuid = (string) Str::uuid();

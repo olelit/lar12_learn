@@ -1,5 +1,16 @@
-parameters:
-  level: max
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/nesbot/carbon/extension.neon
 
-  paths:
-    - app
+parameters:
+    level: max
+    paths:
+        - app
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - '#Method .* return type with generic class Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsTo does not specify its types#'
+        - '#Method .* return type with generic class Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\HasOne does not specify its types#'
+        - '#Method .* return type with generic class Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\HasMany does not specify its types#'
+        - '#Method .* return type with generic class Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\BelongsToMany does not specify its types#'
+        - '#Method .* return type with generic class Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphTo does not specify its types#'
+        - '#Method .* return type with generic class Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphMany does not specify its types#'

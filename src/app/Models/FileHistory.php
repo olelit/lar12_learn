@@ -13,8 +13,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class FileHistory extends Model
 {
+    /**
+     * @return BelongsTo<Client, self>
+     */
     public function client(): BelongsTo
     {
-        return $this->belongsTo(Client::class);
+        /** @var BelongsTo<Client, self> $relation */
+        $relation = $this->belongsTo(Client::class);
+        return $relation;
     }
 }

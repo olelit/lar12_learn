@@ -30,12 +30,12 @@ readonly class FileUploaderForCsvConvertService
     public function saveAndConvert(UploadedFile $file): ?string
     {
         $path = $file->store('input');
-        $outerName = pathinfo($path, PATHINFO_BASENAME);
 
         if ($path === false) {
             throw new Exception('Invalid upload path.');
         }
 
+        $outerName = pathinfo($path, PATHINFO_BASENAME);
         $identififator = (string)Cookie::get(CheckClientCookie::COOKIE_NAME);
 
         if(empty($identififator)) {
