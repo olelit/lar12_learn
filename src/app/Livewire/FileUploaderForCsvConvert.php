@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Services\FileHistoryService;
 use App\Services\Web\V1\FileUploaderForCsvConvertService;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
@@ -42,11 +43,23 @@ class FileUploaderForCsvConvert extends Component
 
     public function downloadConverted(): ?BinaryFileResponse
     {
-        if (!$this->downloadPath) {
-            return null;
+        try {
+            if (!$this->downloadPath) {
+                return null;
+            }
+
+            /** @var FileHistoryService $fileHistoryService */
+            $fileHistoryService = app(FileHistoryService::class);
+            $outerName = pathinfo($this->downloadPath, PATHINFO_BASENAME);
+            $historyInfo = $fileHistoryService->getFileHistByOuter($outerName);
+            $filename = sprintf('%s.csv', $historyInfo->original_name);
+            return response()->download($this->downloadPath, $filename);
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage());
+            session()->flash('message', 'Cannot download file.');
         }
 
-        return response()->download($this->downloadPath);
+        return null;
     }
 
     public function render(): View

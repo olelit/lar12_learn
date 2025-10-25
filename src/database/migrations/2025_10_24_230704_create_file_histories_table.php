@@ -13,6 +13,7 @@ return new class extends Migration {
     {
         Schema::table('clients', function (Blueprint $table) {
             $table->string('web_identificator')->nullable();
+            $table->integer('user_id')->change()->nullable();
         });
 
 
@@ -38,6 +39,7 @@ return new class extends Migration {
     {
         Schema::table('clients', function (Blueprint $table) {
             $table->dropColumn(['web_identificator']);
+            $table->integer('user_id')->change()->nullable(false);
         });
 
         Schema::dropIfExists('file_histories');

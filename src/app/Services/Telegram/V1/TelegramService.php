@@ -7,7 +7,9 @@ use App\Enums\SheetFileExtEnum;
 use App\Helpers\LangHelper;
 use App\Models\Client;
 use App\Services\FileConverterService;
+use App\Services\FileHistoryService;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Internal\InputFile;
 
@@ -16,6 +18,7 @@ readonly class TelegramService
     public function __construct(
         private ClientService        $clientService,
         private FileConverterService $fileConverterService,
+        private FileHistoryService   $fileHistoryService,
     )
     {
     }
@@ -54,7 +57,9 @@ readonly class TelegramService
         }
 
         $inputDir = storage_path(FileConverterService::INPUT_DIR);
-        $inputFullPath = $inputDir . '/' . $fileName;
+        $extension = pathinfo($fileName, PATHINFO_EXTENSION);
+        $outerFileName = Str::uuid() . '.' . $extension;
+        $inputFullPath = $inputDir . '/' . $outerFileName;
 
         $file = $bot->getFile($fileId);
 
@@ -66,10 +71,12 @@ readonly class TelegramService
         $file->save($inputFullPath);
 
         try {
-            $convertedFilePath = $this->fileConverterService->saveHistoryAndConvert($fileName, $fileName, $client);
+            $convertedFilePath = $this->fileConverterService->saveHistoryAndConvert($fileName, $outerFileName, $client);
             if ($convertedFilePath) {
+                $outerOnlyFileName = pathinfo($convertedFilePath, PATHINFO_FILENAME);
+                $fileHistory = $this->fileHistoryService->getFileHistByOuter($outerOnlyFileName);
                 $bot->sendDocument(
-                    document: InputFile::make($convertedFilePath),
+                    document: InputFile::make($convertedFilePath, $fileHistory->original_name),
                     chat_id: $bot->chatId(),
                     caption: LangHelper::getToCSVByKey('successful_convert', ['NAME' => $fileName]),
                 );
